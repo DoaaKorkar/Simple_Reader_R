@@ -47,21 +47,38 @@ summarize_vcf <- function(lines) {
 }
 
 
-cat("Enter file path: ")
-filepath <- readLines("stdin", n = 1)
+repeat {
 
-cat("Enter file extension (csv/vcf/fasta): ")
-extension <- tolower(readLines("stdin", n = 1))
-
-if (!file.exists(filepath)) {
-    stop("File not found: ", filepath)
-}
-
-tryCatch(
-    {
-        read_and_summarize(filepath, extension)
-    },
-    error = function(e) {
-        cat("Something went wrong:", conditionMessage(e), "\n")
+    repeat {
+        cat("Enter file path: ")
+        filepath <- readLines("stdin", n = 1)
+        if (file.exists(filepath)) {
+            break
+        }
+        cat("File not found. Please try again.\n\n")
     }
-)
+
+    repeat {
+        cat("Enter file extension (csv/vcf/fasta): ")
+        extension <- tolower(readLines("stdin", n = 1))
+        if (extension %in% c("csv", "vcf", "fasta")) {
+            break
+        }
+        cat("Unsupported extension. Please try again.\n\n")
+    }
+
+    tryCatch({
+        read_and_summarize(filepath, extension)
+    }, error = function(e) {
+        cat("Something went wrong:",
+            conditionMessage(e),
+            "\n")
+    })
+
+    cat("\nAnalyze another file? (yes/no): ")
+    answer <- tolower(readLines("stdin", n = 1))
+    if (answer == "no") {
+        cat("Goodbye!\n")
+        break
+    }
+}
