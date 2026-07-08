@@ -70,9 +70,7 @@ repeat {
     tryCatch({
         read_and_summarize(filepath, extension)
     }, error = function(e) {
-        cat("Something went wrong:",
-            conditionMessage(e),
-            "\n")
+        cat("Something went wrong:", conditionMessage(e), "\n")
     })
 
     cat("\nAnalyze another file? (yes/no): ")
